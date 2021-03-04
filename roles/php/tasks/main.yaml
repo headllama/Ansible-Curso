@@ -1,0 +1,68 @@
+---
+- name: "instala apache e php"
+  apt:
+    name:
+      - php5
+      - apache2
+      - libapache2-mod-php5
+      - php5-mcrypt
+      - php5-gd
+      - php5-mysql
+    state: latest
+  become: yes
+
+- name: "Copiando cadastro.html"
+  copy: 
+    src: 'files/cadastro.html'
+    dest: '/var/www/html/cadastro.html'
+  become: yes
+
+- name: "Copiando cadastro.php"
+  copy:
+    src: 'files/cadastro.php'
+    dest: '/var/www/html/cadastro.php'
+  become: yes
+
+- name: "Copiando login.html"
+  copy: 
+    src: 'files/login.html'
+    dest: '/var/www/html/login.html'
+  become: yes
+
+- name: "Copiando login.php"
+  copy: 
+    src: 'files/login.php'
+    dest: '/var/www/html/login.php'
+  become: yes
+
+- name: "Copiando index.php"
+  copy:
+    src: 'files/index.php'
+    dest: '/var/www/html/index.php'
+  become: yes
+
+- name: "Alterando dados em cadastro.php"
+  replace:
+    path: '/var/www/html/cadastro.php'
+    regexp: "{{ item.regex }}"
+    replace: "{{ item.value }}"
+  with_items:
+    - { regex: SERVER_NAME, value: "{{ mysql_ip }}" }
+    - { regex: USER_NAME, value: "{{ mysql_username }}" }
+    - { regex: PASSWD, value: "{{ mysql_passwd }}" }
+    - { regex: DB_NAME, value: "{{ mysql_dbname }}" }
+  become: yes
+
+- name: "Alterando dados em login.php"
+  replace:
+    path: '/var/www/html/login.php'
+    regexp: "{{ item.regex }}"
+    replace: "{{ item.value }}"
+  with_items:
+    - { regex: SERVER_NAME, value: "{{ mysql_ip }}" }
+    - { regex: USER_NAME, value: "{{ mysql_username }}" } 
+    - { regex: PASSWD, value: "{{ mysql_passwd }}" }
+    - { regex: DB_NAME, value: "{{ mysql_dbname }}" }
+  become: yes
+  notify:
+    - Reinicia Apache

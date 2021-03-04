@@ -1,0 +1,8 @@
+---
+- hosts: ansible_php
+  roles:
+    - php
+
+- hosts: ansible_mysql
+  roles:
+    - mysql

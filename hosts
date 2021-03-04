@@ -1,0 +1,5 @@
+[ansible_php]
+192.168.0.201 ansible_user=vagrant ansible_ssh_private_key_file="/home/vagrant/.vagrant/machines/ansible_php/virtualbox/private_key"
+
+[ansible_mysql]
+192.168.0.202 ansible_user=vagrant ansible_ssh_private_key_file="/home/vagrant/.vagrant/machines/ansible_mysql/virtualbox/private_key"

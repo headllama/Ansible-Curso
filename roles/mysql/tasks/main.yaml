@@ -1,0 +1,54 @@
+---
+- name: "instala o mysql"
+  apt:
+    name:
+      - mysql-server
+      - mysql-server-5.5
+      - python-mysqldb
+      - libmysqlclient-dev
+    state: latest
+  become: yes
+
+- name: "Instala o pip"
+  apt: 
+    name: 
+      - python-pip
+    state: present
+  become: yes
+
+- name: "Instala o modulo MySQL do Python"
+  pip:
+    name: MySQL-python
+    state: present
+  become: yes
+
+- name: "Copiando my.cnf"
+  copy: 
+    src: 'files/my.cnf'
+    dest: '/etc/mysql/my.cnf'
+
+- name: "Cria um usuario walber, com a senha 12345 e com todos os privilégios"
+  mysql_user:
+    login_user: root
+    name: walber
+    password: 12345
+    priv: '*.*:ALL'
+    state: present
+    host: "{{ item }}"
+  with_items:
+    - 'localhost'
+    - '127.0.0.1'
+    - '192.168.0.201'
+
+- name: "Cria o database FirstData"
+  mysql_db:
+    name: FirstData
+    login_user: root
+    state: present
+  register: db_created
+
+- name: "Cria uma tabela"
+  command: mysql -u walber -p12345 -e 'CREATE TABLE usuarios (ID INT NOT NULL AUTO_INCREMENT, login Varchar(30), senha Varchar(40), Primary Key (ID));' FirstData
+  when: db_created.changed
+  notify:
+    - Reinicia Mysql
